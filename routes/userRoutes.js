@@ -11,19 +11,9 @@ import multer from 'multer'
 
 const router = express.Router()
 
-// Setup file upload
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, './uploads/')
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9)
-    cb(null, uniqueSuffix + '-' + file.originalname)
-  }
-})
-
+// Setup file upload with memory storage
 const upload = multer({ 
-  storage: storage,
+  storage: multer.memoryStorage(),
   limits: { fileSize: 5 * 1024 * 1024 }, // 5MB limit
   fileFilter: function (req, file, cb) {
     // Accept only images
@@ -40,6 +30,6 @@ router.post('/login', authUser)
 router.route('/profile')
   .get(protect, getUserProfile)
   .put(protect, upload.single('profilePic'), updateUserProfile)
-router.get('/', protect, searchUsers)
+router.route('/search').get(protect, searchUsers)
 
 export default router

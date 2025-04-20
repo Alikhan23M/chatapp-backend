@@ -27,11 +27,8 @@ const registerUser = asyncHandler(async (req, res) => {
   let profilePic = ''
   if (req.file) {
     try {
-      // Upload to cloudinary
-      profilePic = await uploadToCloudinary(req.file.path, 'chat-app-profiles')
-      
-      // Delete file from server after upload
-      fs.unlinkSync(req.file.path)
+      // Upload to cloudinary directly from buffer
+      profilePic = await uploadToCloudinary(req.file.buffer, 'chat-app-profiles')
     } catch (error) {
       console.error("Error uploading profile picture:", error)
       res.status(500)
@@ -123,12 +120,9 @@ const updateUserProfile = asyncHandler(async (req, res) => {
     // Upload new profile picture if provided
     if (req.file) {
       try {
-        // Upload to cloudinary
-        const profilePic = await uploadToCloudinary(req.file.path, 'chat-app-profiles')
+        // Upload to cloudinary directly from buffer
+        const profilePic = await uploadToCloudinary(req.file.buffer, 'chat-app-profiles')
         user.profilePic = profilePic
-        
-        // Delete file from server after upload
-        fs.unlinkSync(req.file.path)
       } catch (error) {
         console.error("Error uploading profile picture:", error)
         res.status(500)

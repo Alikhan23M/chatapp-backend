@@ -27,11 +27,8 @@ const sendMessage = asyncHandler(async (req, res) => {
   if (req.files && req.files.length > 0) {
     try {
       for (const file of req.files) {
-        const fileUrl = await uploadToCloudinary(file.path, 'chat-app-messages')
+        const fileUrl = await uploadToCloudinary(file.buffer, 'chat-app-messages')
         fileUrls.push(fileUrl)
-        
-        // Delete file from server after upload
-        fs.unlinkSync(file.path)
       }
     } catch (error) {
       console.error("Error uploading files:", error)

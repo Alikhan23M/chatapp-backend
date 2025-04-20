@@ -10,9 +10,24 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 })
 
-export const uploadToCloudinary = async (filePath, folder) => {
+export const uploadToCloudinary = async (file, folder) => {
   try {
-    const result = await cloudinary.uploader.upload(filePath, {
+    // If file is a buffer (from memory storage)
+    if (Buffer.isBuffer(file)) {
+      const result = await new Promise((resolve, reject) => {
+        cloudinary.uploader.upload_stream(
+          { folder: folder },
+          (error, result) => {
+            if (error) reject(error)
+            resolve(result)
+          }
+        ).end(file)
+      })
+      return result.secure_url
+    }
+    
+    // If file is a path (for backward compatibility)
+    const result = await cloudinary.uploader.upload(file, {
       folder: folder,
     })
     return result.secure_url
